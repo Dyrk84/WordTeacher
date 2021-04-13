@@ -8,9 +8,6 @@ import static com.WordTeacher.utils.Colors.RESET;
 
 
 public class Menu {
-    //adja meg az angol szót:
-    //adja meg a magyar jelentését:
-    //felírja a listákba az inputot
     static WordTeacher wt = new WordTeacher();
 
     public static void menu() {
@@ -20,7 +17,7 @@ public class Menu {
                 wt.enteringAWordToLearn();
                 break;
             case 2:
-                wt.InterrogationOfWords();
+                wt.translateEngHun();
                 break;
             case 3:
                 exit();
@@ -48,7 +45,7 @@ public class Menu {
         System.out.println("*" + RED.typeOfColor + " Choose one of the following possibilities:            " + RESET.typeOfColor +
                 " *");
         System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Entering a word to learn                            *");
-        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Interrogation of words                              *");
+        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Translate from English to Hungary                   *");
         System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Exit                                                *");
         System.out.println("**********************************************************");
     }
