@@ -1,4 +1,4 @@
-package com.WordTeacher.tools;
+package com.wordteacher.tools;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -6,20 +6,18 @@ import java.util.Scanner;
 import static com.WordTeacher.utils.Colors.RED;
 import static com.WordTeacher.utils.Colors.RESET;
 
-public class Menu {
-    //adja meg az angol szót:
-    //adja meg a magyar jelentését:
-    //felírja a listákba az inputot
-    WordTeacher wt = new WordTeacher();
 
-    public void menu() {
+public class Menu {
+    static WordTeacher wt = new WordTeacher();
+
+    public static void menu() {
         int chosenNumber = chosenNumber();
         switch (chosenNumber) {
             case 1:
                 wt.enteringAWordToLearn();
                 break;
             case 2:
-                wt.InterrogationOfWords();
+                wt.translateEngHun();
                 break;
             case 3:
                 exit();
@@ -30,7 +28,7 @@ public class Menu {
         }
     }
 
-    private int chosenNumber() {
+    private static int chosenNumber() {
         do {
             printMenu();
             Scanner scanner = new Scanner(System.in);
@@ -42,21 +40,21 @@ public class Menu {
         } while (true);
     }
 
-    private void printMenu() {
+    private static void printMenu() {
         System.out.println("*********************** Menu *****************************");
         System.out.println("*" + RED.typeOfColor + " Choose one of the following possibilities:            " + RESET.typeOfColor +
                 " *");
         System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Entering a word to learn                            *");
-        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Interrogation of words                              *");
+        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Translate from English to Hungary                   *");
         System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Exit                                                *");
         System.out.println("**********************************************************");
     }
 
-    private void yourChooseIsNotAppropriate() {
+    private static void yourChooseIsNotAppropriate() {
         System.out.println(RED.typeOfColor + "Your choose is not appropriate!" + RESET.typeOfColor);
     }
 
-    public void exit() {
+    public static void exit() {
         System.out.println("Good bye!");
     }
 
