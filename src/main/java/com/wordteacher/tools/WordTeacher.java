@@ -1,13 +1,16 @@
 package com.wordteacher.tools;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
-import static com.WordTeacher.utils.Colors.RED;
-import static com.WordTeacher.utils.Colors.RESET;
+import static com.wordteacher.utils.Colors.GREEN;
+import static com.wordteacher.utils.Colors.RED;
+import static com.wordteacher.utils.Colors.RESET;
 
 public class WordTeacher {
 
@@ -63,14 +66,8 @@ public class WordTeacher {
         String engWord = scanner();
         System.out.println("Enter the hungary form of the word:");
         String hunWord = scanner();
-        //teszt
-        // System.out.println("Teszt: A szó angol formája: \"" + engWord + "\" és a magyar formája: \"" + hunWord + "\"");
         knownWordsTest(engWord, hunWord);
         Menu.menu();
-    }
-
-    public void translateEngHun() {
-
     }
 
     private String scanner() {
@@ -90,6 +87,8 @@ public class WordTeacher {
         String existingHunWord = "";
 
         try {
+            FileWriter fw = new FileWriter(dictionaryPath, true); //ha ez nincs itt, és nincs file, akkor exceptiont dob.
+            fw.close();
             Scanner scanner = new Scanner(new File(dictionaryPath));
             scanner.useDelimiter("[,\n]"); //TODO ez mire kell? Ez állítja be, hogy a "," legyen ami mutatja hogy hol a határ a két szó között?
 
@@ -102,11 +101,10 @@ public class WordTeacher {
                 }
             }
             if (existingWords) {
-                System.out.println("The specified word pair already exists in the dictionary!");
+                System.out.println(RED.typeOfColor + "The specified word pair already exists in the dictionary!" + RESET.typeOfColor);
             } else {
-                wordsToFiles(engWord, hunWord);
+                wordsToFiles(engWord,hunWord);
             }
-
         } catch (Exception e) {
             System.out.println("knownWordsTest() exception");
         }
@@ -115,11 +113,19 @@ public class WordTeacher {
     private void wordsToFiles(String engWord, String hunWord) {
         try {
             FileWriter fw = new FileWriter(dictionaryPath, true); //ez a true csinálja hogy mellé ír, nem rá
-            fw.write(engWord + "," + hunWord + "\n");
+            fw.write(engWord + "," + hunWord + "," + "\n");
             fw.close(); //bezárja a filebaírás műveletét, a PrintWriter t.
-            System.out.println("The specified word pair is added to the dictionary.");
+            System.out.println(GREEN.typeOfColor + "The specified word pair is added to the dictionary." + RESET.typeOfColor);
         } catch (Exception e) {
             System.out.println("Record not saved");
         }
+    }
+
+    public void translateEngHun() {
+
+    }
+
+    public void translateHunEng() {
+
     }
 }
