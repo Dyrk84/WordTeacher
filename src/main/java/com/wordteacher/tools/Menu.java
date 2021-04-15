@@ -15,7 +15,7 @@ public class Menu {
         int chosenNumber = chosenNumber();
         switch (chosenNumber) {
             case 1:
-                wt.enteringAWordToLearn();
+                wt.checkForFile();
                 break;
             case 2:
                 wt.translateEngHun();
