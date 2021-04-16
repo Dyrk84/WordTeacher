@@ -7,39 +7,23 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Formatter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import static com.wordteacher.utils.Colors.BLUE;
 import static com.wordteacher.utils.Colors.GREEN;
 import static com.wordteacher.utils.Colors.RED;
 import static com.wordteacher.utils.Colors.RESET;
 
 public class WordTeacher {
 
-    final String DICTIONARY_PATH = "D:\\DyrkWork\\WordTeacher\\engWords.csv";
+    private boolean booleanExistingWord = false;
 
-    public void checkForFile() {
-        File f = new File(DICTIONARY_PATH);
-        if (f.exists() && f.isFile()) {
-            enteringAWordToLearn();
-        } else {
-            System.out.println(RED.typeOfColor + "Dictionary missing!" + RESET.typeOfColor + " Do you want to make one?" + "" +
-                    " If yes, type " + RED.typeOfColor + "\"yes\" " + RESET.typeOfColor + "or just " + RED.typeOfColor +
-                    "\"y\" " + RESET.typeOfColor + "!");
-            Scanner scanner = new Scanner(System.in);
-            String answer = scanner.next();
-            if (answer.equals("yes") || answer.equals("y")) {
-                try {
-                    Formatter file = new Formatter(DICTIONARY_PATH);
-                    file.close();
-                    enteringAWordToLearn();
-                } catch (Exception e) {
-                    System.out.println("checkForFile() exception: " + e);
-                }
-            } else Menu.exit();
-        }
-    }
+    final String DICTIONARY_PATH = "D:\\DyrkWork\\WordTeacher\\engWords.csv";
 
     public void enteringAWordToLearn() {
         System.out.println("Enter the english form of the word:");
@@ -96,9 +80,9 @@ public class WordTeacher {
 
     private void wordsToFiles(String engWord, String hunWord) {
         try {
-            FileWriter fw = new FileWriter(DICTIONARY_PATH, true); //ez a true csinálja hogy mellé ír, nem rá
+            FileWriter fw = new FileWriter(DICTIONARY_PATH, true);
             fw.write(engWord + "," + hunWord + "," + "\n");
-            fw.close(); //bezárja a filebaírás műveletét, a PrintWriter t.
+            fw.close();
 
             System.out.println(GREEN.typeOfColor + "The specified word pair is added to the dictionary." + RESET.typeOfColor);
         } catch (Exception e) {
@@ -106,20 +90,101 @@ public class WordTeacher {
         }
     }
 
-    public void translateEngHun() {
-        String line = "";
+//    private void filebolListabaKezeles() { //tanuláshoz kell, nincs funkciója a programban
+//        try { // így tudom a csv file sorait tömbökként bepakolni listába.
+//            List<List<String>> dictionaryInList = new ArrayList<>();
+//            try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) {
+//                String line;
+//                while ((line = br.readLine()) != null) {
+//                    String[] values = line.split(",");
+//                    dictionaryInList.add(Arrays.asList(values));
+//                }
+//            }
+//            for (int i = 0; i < dictionaryInList.size(); i++) {
+//                System.out.println("angol szavak: " + dictionaryInList.get(i).get(0));
+//            }
+//            System.out.println("második sor szópár (második String tömb): " + dictionaryInList.get(1));
+//            System.out.println("második sor angol szava: " +dictionaryInList.get(1).get(0));
+//
+//        } catch (FileNotFoundException e) {
+//            System.out.println("translateEngHun() exception: " + e);
+//        } catch (IOException e) {
+//            System.out.println("translateEngHun() exception: " + e);
+//        }
+//    }
+
+    public void inputForTranslateEng() {
+        System.out.println("Enter the english form of the word:");
+        String engWord = scanner();
+        inputIsInDictionaryTest(engWord);
+        if (booleanExistingWord) {
+            booleanExistingWord = false;
+            translateEngHun(engWord);
+        }
+    }
+
+    private void inputIsInDictionaryTest(String inputWord) {
+        booleanExistingWord = false;
+        String existingWord = "";
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH));
+            Scanner scanner = new Scanner(new File(DICTIONARY_PATH));
+            scanner.useDelimiter("[,\n]");
 
-            while ((line = br.readLine()) != null) {
-                ArrayList<String> engList = new ArrayList<>();
-                engList.add(line.intern());
+            while (scanner.hasNext() && !booleanExistingWord) {
+                existingWord = scanner.next();
 
-//                String[] values = line.split(",");
-                //System.out.println("English: " + values[0] + " Hungarian: " + values[1]);
-                System.out.println(engList);
+                if (existingWord.equals(inputWord)) {
+                    booleanExistingWord = true;
+                }
             }
+            if (booleanExistingWord) {
+                System.out.println("The requested word (" + BLUE.typeOfColor + inputWord + RESET.typeOfColor + ") "
+                        + GREEN.typeOfColor + "exists" + RESET.typeOfColor + " in the dictionary.");
+            } else {
+                inputNotExisting(inputWord);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("knownWordsTest() exception: " + e);
+        }
+    }
+
+    private void inputNotExisting(String inputWord) {
+        System.out.println("The requested word (" + inputWord + ") does" + RED.typeOfColor + " not exist"
+                + RESET.typeOfColor + " in the dictionary. Do you want to recording a new word? If yes, type "
+                + RED.typeOfColor + "\"yes\" " + RESET.typeOfColor + "or just " + RED.typeOfColor +
+                "\"y\"" + RESET.typeOfColor + "! Anything else returns back to the menu.");
+        Scanner scanner = new Scanner(System.in);
+        String answer = scanner.next();
+        if (answer.equals("yes") || answer.equals("y")) {
+            enteringAWordToLearn();
+        } else {
+            Menu.menu();
+        }
+    }
+
+    public void translateEngHun(String engWord) {
+        System.out.print("The meaning of the English word " + BLUE.typeOfColor + engWord + RESET.typeOfColor + " : ");
+
+        try {
+            List<List<String>> dictionaryInList = new ArrayList<>();
+            try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] values = line.split(",");
+                    dictionaryInList.add(Arrays.asList(values));
+                }
+            }
+            for (int i = 0; i < dictionaryInList.size(); i++) {
+                Pattern pattern = Pattern.compile(engWord);
+                Matcher matcher = pattern.matcher(dictionaryInList.get(i).get(0));
+                if (matcher.find()) {
+                    System.out.print(GREEN.typeOfColor + dictionaryInList.get(i).get(1) + RESET.typeOfColor + ", ");
+                }
+            }
+            System.out.println();
+            pressEnterToContinue();
+            Menu.menu();
         } catch (FileNotFoundException e) {
             System.out.println("translateEngHun() exception: " + e);
         } catch (IOException e) {
@@ -127,7 +192,51 @@ public class WordTeacher {
         }
     }
 
-    public void translateHunEng() {
+    private void pressEnterToContinue() {
+        System.out.println("Press Enter to continue...");
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            System.out.println("pressEnterToContinue() exception: " + e);
+        }
+    }
 
+    public void inputForTranslateHun() {
+        System.out.println("Enter the hungarian form of the word:");
+        String hunWord = scanner();
+        inputIsInDictionaryTest(hunWord);
+        if (booleanExistingWord) {
+            booleanExistingWord = false;
+            translateHunEng(hunWord);
+        }
+    }
+
+    public void translateHunEng(String hunWord) {
+        System.out.print("The meaning of the English word " + BLUE.typeOfColor + hunWord + RESET.typeOfColor + " : ");
+
+        try {
+            List<List<String>> dictionaryInList = new ArrayList<>();
+            try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] values = line.split(",");
+                    dictionaryInList.add(Arrays.asList(values));
+                }
+            }
+            for (int i = 0; i < dictionaryInList.size(); i++) {
+                Pattern pattern = Pattern.compile(hunWord);
+                Matcher matcher = pattern.matcher(dictionaryInList.get(i).get(1));
+                if (matcher.find()) {
+                    System.out.print(GREEN.typeOfColor + dictionaryInList.get(i).get(0) + RESET.typeOfColor + ", ");
+                }
+            }
+            System.out.println();
+            pressEnterToContinue();
+            Menu.menu();
+        } catch (FileNotFoundException e) {
+            System.out.println("translateEngHun() exception: " + e);
+        } catch (IOException e) {
+            System.out.println("translateEngHun() exception: " + e);
+        }
     }
 }

@@ -1,27 +1,50 @@
 package com.wordteacher.tools;
 
+import java.io.File;
+import java.util.Formatter;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-
 
 import static com.wordteacher.utils.Colors.RESET;
 import static com.wordteacher.utils.Colors.RED;
 
-
 public class Menu {
     static WordTeacher wt = new WordTeacher();
+
+    public static void checkForFile() {
+        String dictionaryPath = "D:\\DyrkWork\\WordTeacher\\engWords.csv";
+        File f = new File(dictionaryPath);
+        if (f.exists() && f.isFile()) {
+            menu();
+        } else {
+            System.out.println(RED.typeOfColor + "Dictionary missing!" + RESET.typeOfColor + " Do you want to make one?" + "" +
+                    " If yes, type " + RED.typeOfColor + "\"yes\" " + RESET.typeOfColor + "or just " + RED.typeOfColor +
+                    "\"y\" " + RESET.typeOfColor + " and record the first word pair!");
+            Scanner scanner = new Scanner(System.in);
+            String answer = scanner.next();
+            if (answer.equals("yes") || answer.equals("y")) {
+                try {
+                    Formatter file = new Formatter(dictionaryPath);
+                    file.close();
+                    wt.enteringAWordToLearn();
+                } catch (Exception e) {
+                    System.out.println("checkForFile() exception: " + e);
+                }
+            } else Menu.exit();
+        }
+    }
 
     public static void menu() {
         int chosenNumber = chosenNumber();
         switch (chosenNumber) {
             case 1:
-                wt.checkForFile();
+                wt.enteringAWordToLearn();
                 break;
             case 2:
-                wt.translateEngHun();
+                wt.inputForTranslateEng();
                 break;
             case 3:
-                wt.translateHunEng();
+                wt.inputForTranslateHun();
                 break;
             case 4:
                 exit();
