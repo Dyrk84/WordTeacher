@@ -8,11 +8,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.wordteacher.utils.Colors.BLUE;
 import static com.wordteacher.utils.Colors.GREEN;
@@ -23,7 +29,7 @@ public class WordTeacher {
 
     private boolean booleanExistingWord = false;
 
-    final String DICTIONARY_PATH = "D:\\DyrkWork\\WordTeacher\\engWords.csv";
+    final private String DICTIONARY_PATH = "D:\\DyrkWork\\WordTeacher\\engWords.csv";
 
     public void enteringAWordToLearn() {
         System.out.println("Enter the english form of the word:");
@@ -118,7 +124,7 @@ public class WordTeacher {
         String engWord = scanner();
         inputIsInDictionaryTest(engWord);
         if (booleanExistingWord) {
-            booleanExistingWord = false;
+            booleanExistingWord = false; //TODO ez lehet nem kell ide
             translateEngHun(engWord);
         }
     }
@@ -185,8 +191,6 @@ public class WordTeacher {
             System.out.println();
             pressEnterToContinue();
             Menu.menu();
-        } catch (FileNotFoundException e) {
-            System.out.println("translateEngHun() exception: " + e);
         } catch (IOException e) {
             System.out.println("translateEngHun() exception: " + e);
         }
@@ -233,10 +237,98 @@ public class WordTeacher {
             System.out.println();
             pressEnterToContinue();
             Menu.menu();
-        } catch (FileNotFoundException e) {
-            System.out.println("translateEngHun() exception: " + e);
         } catch (IOException e) {
             System.out.println("translateEngHun() exception: " + e);
         }
     }
+
+    public void dictionaryOverview() {
+        //Mapet csinálni, String key Array value
+        //iterálni az angol szavakon regexel, ha van ugyanolyan angol szó, a mellette lévő magyar szavat rakja egy tömbbe. Rakja az angol szavakat egy Mapbe, a key helyére, a  tömböt a value helyére.
+        try {
+            List<List<String>> dictionaryInList = new ArrayList<>();
+            List<String> engWordsList = new ArrayList<>();
+            List<String> hunWordsList = new ArrayList<>();
+            Set<String> setEngWords = new HashSet();
+            Map<String, String[]> orderedDictionaryInMap = new HashMap<>();
+
+            try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) { //ez rakja össze a file-ból a nagy listát
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] values = line.split(",");
+                    dictionaryInList.add(Arrays.asList(values));
+                }
+            }
+
+            for (int i = 0; i < dictionaryInList.size(); i++) { //ez csinálja meg az angol és a magyar listát
+                engWordsList.add(dictionaryInList.get(i).get(0));
+                hunWordsList.add(dictionaryInList.get(i).get(1));
+            }
+
+            for (int i = 0; i < dictionaryInList.size(); i++) {
+                setEngWords.add(engWordsList.get(i));
+            }
+            List<String> orderedEngWordsList = setEngWords.stream().sorted().collect(Collectors.toList());
+
+
+            //ez nyomtatja ki a szótárat, de a többszörös jelentések többször vannak benne.
+            for (int i = 1; i < engWordsList.size() + 1; i++) { //azért 1-ről indul, hogy a számláló ne nyomtasson 0-nál egy sort. Így ha lement az első 20, akkor fog feljönni a pressEnter és a számláló.
+                System.out.print(engWordsList.get(i - 1) + " - ");
+                System.out.println(hunWordsList.get(i - 1));
+                if (i % 20 == 0) { //ezzel érem el azt, hogy ne hányja tele a képernyőt szavakkal
+                    System.out.println("The dictionary overviewed content : " + engWordsList.size() + "/" + (i));
+                    pressEnterToContinue();
+                }
+            }
+
+            for (int i = 0; i < orderedEngWordsList.size(); i++) {
+                Pattern pattern = Pattern.compile(orderedEngWordsList.get(i));
+                int matcherCounter = 0;
+                for (int j = 0; j < dictionaryInList.size(); j++) {
+                    Matcher matcher = pattern.matcher(dictionaryInList.get(j).get(0));
+                    while (matcher.find()) {
+                        matcherCounter++;
+                    }
+                    String[] hunSynonyms = new String[matcherCounter];
+
+                    Matcher matcher2 = pattern.matcher(dictionaryInList.get(j).get(0));
+                    while (matcher2.find()) {
+                        String bla = dictionaryInList.get(j).get(1);
+                        for (int k = 0; k < hunSynonyms.length; k++){
+                            hunSynonyms[k] = bla;
+                        }
+                        System.out.println("hunSynonyms kiíratása: " + Arrays.toString(hunSynonyms));
+                        System.out.println("orderedDictionaryInMap kiíratása üresen: " + orderedDictionaryInMap);
+                        Objects.requireNonNull(Objects.requireNonNull(orderedDictionaryInMap.put(orderedEngWordsList.get(i), hunSynonyms)));
+                        System.out.println("orderedDictionaryInMap kiíratása: " + orderedDictionaryInMap);
+                    }
+                }
+
+            }
+
+//                for (int j = 0; j < dictionaryInList.size(); j++) {
+//                    String[] hunSynonyms = dictionaryInList.get(i).get(1);
+//                }
+//                orderedDictionaryInMap.put(engWordsList.get(i), hunSynonyms.get(i));
+
+
+//            for (int i = 0; i < orderedDictionaryInMap.size(); i++) {
+//                System.out.println("rendezett szótár: " + orderedDictionaryInMap.get("key"));
+//            }
+
+            pressEnterToContinue();
+            Menu.menu();
+        } catch (
+                FileNotFoundException e) {
+            System.out.println("translateEngHun() exception: " + e);
+        } catch (
+                IOException e) {
+            System.out.println("translateEngHun() exception: " + e);
+        }
+    }
+
+//kell egy lista, milyen szavak vannak a szótárban, abc sorrendben.
+
+//ha hibásan lett bevíve egy szó, ki kell tudni javítani!
+//kell kérni egy inputot. Azt az inputot meg kell keresni a fileban, és át kell írni.
 }

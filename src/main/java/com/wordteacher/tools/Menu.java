@@ -40,13 +40,16 @@ public class Menu {
             case 1:
                 wt.enteringAWordToLearn();
                 break;
-            case 2:
+//            case 2:
+//                wt.dictionaryOverview();
+//                break;
+            case 3:
                 wt.inputForTranslateEng();
                 break;
-            case 3:
+            case 4:
                 wt.inputForTranslateHun();
                 break;
-            case 4:
+            case 5:
                 exit();
                 break;
             default:
@@ -73,9 +76,10 @@ public class Menu {
         System.out.println("*" + RED.typeOfColor + " Choose one of the following possibilities:            " + RESET.typeOfColor +
                 " *");
         System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Entering a word to learn                            *");
-        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Translate from english to hungarian                 *");
-        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Translate from hungarian to english                 *");
-        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Exit                                                *");
+        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Dictionary overview                                 *");
+        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Translate from english to hungarian                 *");
+        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Translate from hungarian to english                 *");
+        System.out.println("* " + RED.typeOfColor + "5." + RESET.typeOfColor + " Exit                                                *");
         System.out.println("**********************************************************");
     }
 
