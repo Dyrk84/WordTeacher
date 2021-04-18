@@ -11,8 +11,8 @@ import static com.wordteacher.utils.Colors.RED;
 public class Menu {
     static WordTeacher wt = new WordTeacher();
 
-    public static void checkForFile() {
-        String dictionaryPath = "D:\\DyrkWork\\WordTeacher\\engWords.csv";
+    public void checkForFile() {
+        String dictionaryPath =("src/main/resources/engWords.csv"); //relative path
         File f = new File(dictionaryPath);
         if (f.exists() && f.isFile()) {
             menu();
@@ -40,16 +40,22 @@ public class Menu {
             case 1:
                 wt.enteringAWordToLearn();
                 break;
-//            case 2:
-//                wt.dictionaryOverview();
-//                break;
+            case 2:
+                wt.wordRewriter();
+                break;
             case 3:
-                wt.inputForTranslateEng();
+                wt.dictionaryOverviewEngHun();
                 break;
             case 4:
-                wt.inputForTranslateHun();
+                wt.dictionaryOverviewHunEng();
                 break;
             case 5:
+                wt.inputForTranslateEng();
+                break;
+            case 6:
+                wt.inputForTranslateHun();
+                break;
+            case 7:
                 exit();
                 break;
             default:
@@ -76,10 +82,12 @@ public class Menu {
         System.out.println("*" + RED.typeOfColor + " Choose one of the following possibilities:            " + RESET.typeOfColor +
                 " *");
         System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Entering a word to learn                            *");
-        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Dictionary overview                                 *");
-        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Translate from english to hungarian                 *");
-        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Translate from hungarian to english                 *");
-        System.out.println("* " + RED.typeOfColor + "5." + RESET.typeOfColor + " Exit                                                *");
+        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Rewrite a word                                      *");
+        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Dictionary overview Eng-Hun                          *");
+        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Dictionary overview Hun-Eng                         *");
+        System.out.println("* " + RED.typeOfColor + "5." + RESET.typeOfColor + " Translate from english to hungarian                 *");
+        System.out.println("* " + RED.typeOfColor + "6." + RESET.typeOfColor + " Translate from hungarian to english                 *");
+        System.out.println("* " + RED.typeOfColor + "7." + RESET.typeOfColor + " Exit                                                *");
         System.out.println("**********************************************************");
     }
 
