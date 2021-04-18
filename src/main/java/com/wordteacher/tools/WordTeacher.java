@@ -30,6 +30,9 @@ import static com.wordteacher.utils.Colors.RESET;
 
 public class WordTeacher {
 
+    private int repeatNum;
+    private int goodAnswer = 0;
+
     private boolean booleanExistingWord = false;
 
     final private String DICTIONARY_PATH = "src/main/resources/engWords.csv";
@@ -451,7 +454,131 @@ public class WordTeacher {
             Menu.menu();
 
         } else {
-            inputNotExisting(toBeRemovedWord);
+            System.out.println(RED.typeOfColor + "Can't find this word to remove: " + RESET.typeOfColor + toBeRemovedWord);
+        }
+    }
+
+    public void repeaterEng(){
+        System.out.println("How many words you need?");
+        repeatNum = scannerNum();
+        for (int i = 0; i < repeatNum; i++){
+            wordQuizEng();
+        }
+        repeaterEnd();
+    }
+
+    public void repeaterHun(){
+        System.out.println("How many words you need?");
+        repeatNum = scannerNum();
+        for (int i = 0; i < repeatNum; i++){
+            wordQuizHun();
+        }
+        repeaterEnd();
+    }
+
+    private int scannerNum() {
+        while (true) {
+            try {
+                Scanner reader = new Scanner(System.in);
+                return reader.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println(RED.typeOfColor + "wrong input data!" + RESET.typeOfColor);
+            }
+        }
+    }
+
+    private void repeaterEnd(){
+        System.out.println("The correct answers number together: " + repeatNum + "/" + goodAnswer);
+        goodAnswer = 0;
+        repeatNum = 0;
+        Menu.menu();
+    }
+
+    public void wordQuizEng(){
+
+        List<List<String>> dictionaryInList = new ArrayList<>();
+        Set<String> setEngWords = new HashSet();
+        MultiValuedMap<String, String> engDictionaryWithHunSynonyms = new ArrayListValuedHashMap<>(); //Multi Valued Map leírása: https://www.baeldung.com/apache-commons-multi-valued-map
+
+        try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) { //ez rakja össze a file-ból a nagy listát
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                dictionaryInList.add(Arrays.asList(values));
+            }
+        } catch (IOException e) {
+            System.out.println("wordRemover() exception: " + e);
+        }
+
+        for (int i = 0; i < dictionaryInList.size(); i++) { //feltölti a multiMapet a fileból kiolvasott lista elemeivel
+            engDictionaryWithHunSynonyms.put(dictionaryInList.get(i).get(0), dictionaryInList.get(i).get(1));
+        }
+
+
+        for (int i = 0; i < dictionaryInList.size(); i++) { //ez csinálja meg az angol set listát
+            setEngWords.add(dictionaryInList.get(i).get(0));
+        }
+
+        List<String> engWordsList = new ArrayList<>(setEngWords);
+
+        Collections.shuffle(engWordsList);
+        String askedWord = engWordsList.get(0);
+        System.out.println("What does the english word mean: " + BLUE.typeOfColor + askedWord + RESET.typeOfColor + "?");
+        System.out.print("Write the correct answer here: ");
+        String answeredWord = scanner();
+
+        if (engDictionaryWithHunSynonyms.get(askedWord).contains(answeredWord)){
+            System.out.println("jár a jutifalat!");
+            goodAnswer++;
+        } else {
+            System.out.println("hülye vagy fiam mint szódás a lovát!");
+            System.out.println("The possible answer is: " + GREEN.typeOfColor +
+                    engDictionaryWithHunSynonyms.get(engWordsList.get(0)) + RESET.typeOfColor);
+        }
+        Menu.menu();
+
+    }
+
+    public void wordQuizHun(){
+
+        List<List<String>> dictionaryInList = new ArrayList<>();
+        Set<String> setHunWords = new HashSet();
+        MultiValuedMap<String, String> hunDictionaryWithEngSynonyms = new ArrayListValuedHashMap<>(); //Multi Valued Map leírása: https://www.baeldung.com/apache-commons-multi-valued-map
+
+        try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) { //ez rakja össze a file-ból a nagy listát
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                dictionaryInList.add(Arrays.asList(values));
+            }
+        } catch (IOException e) {
+            System.out.println("wordRemover() exception: " + e);
+        }
+
+        for (int i = 0; i < dictionaryInList.size(); i++) { //feltölti a multiMapet a fileból kiolvasott lista elemeivel
+            hunDictionaryWithEngSynonyms.put(dictionaryInList.get(i).get(1), dictionaryInList.get(i).get(0));
+        }
+
+
+        for (int i = 0; i < dictionaryInList.size(); i++) { //ez csinálja meg az angol set listát
+            setHunWords.add(dictionaryInList.get(i).get(1));
+        }
+
+        List<String> hunWordsList = new ArrayList<>(setHunWords);
+
+        Collections.shuffle(hunWordsList);
+        String askedWord = hunWordsList.get(0);
+        System.out.println("What does the hungarian word mean: " + BLUE.typeOfColor + askedWord + RESET.typeOfColor + "?");
+        System.out.print("Write the correct answer here: ");
+        String answeredWord = scanner();
+
+        if (hunDictionaryWithEngSynonyms.get(askedWord).contains(answeredWord)){
+            System.out.println(GREEN.typeOfColor + "jár a jutifalat!" + RESET.typeOfColor);
+            goodAnswer++;
+        } else {
+            System.out.println(RED.typeOfColor + "hülye vagy fiam mint szódás a lovát!" + RESET.typeOfColor);
+            System.out.println("The possible answer is: " + GREEN.typeOfColor +
+                    hunDictionaryWithEngSynonyms.get(hunWordsList.get(0)) + RESET.typeOfColor);
         }
     }
 }
