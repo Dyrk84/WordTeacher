@@ -268,7 +268,6 @@ public class WordTeacher {
             for (int i = 0; i < dictionaryInList.size(); i++) { //feltölti a multiMapet a fileból kiolvasott lista elemeivel
                 engDictionaryWithHunSynonyms.put(dictionaryInList.get(i).get(0), dictionaryInList.get(i).get(1));
             }
-            System.out.println("teszt: " + engDictionaryWithHunSynonyms);
 
             for (int i = 1; i < orderedEngWordsList.size() + 1; i++) { //nyomtatja a multiMap value elemeit az abc sorrendbe tett set hívása szerint.
                 System.out.println(BLUE.typeOfColor + orderedEngWordsList.get(i - 1) + RESET.typeOfColor
@@ -314,7 +313,6 @@ public class WordTeacher {
             for (int i = 0; i < dictionaryInList.size(); i++) {
                 hunDictionaryWithEngSynonyms.put(dictionaryInList.get(i).get(1), dictionaryInList.get(i).get(0));
             }
-            System.out.println("teszt: " + hunDictionaryWithEngSynonyms);
 
             for (int i = 1; i < orderedHunWordsList.size() + 1; i++) {
                 System.out.println(BLUE.typeOfColor + orderedHunWordsList.get(i - 1) + RESET.typeOfColor
@@ -379,14 +377,81 @@ public class WordTeacher {
                 File dump = new File(DICTIONARY_PATH);
                 newFile.renameTo(dump);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("wordRewriter() exception: " + e);
             }
             Menu.menu();
 
         } else {
             inputNotExisting(toBeRewrittenWord);
         }
-        //lecseréli mindkét listában
+    }
 
+    public void wordRemover() {
+        List<List<String>> dictionaryInList = new ArrayList<>();
+        List<String> engWordsList = new ArrayList<>();
+        List<String> hunWordsList = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) { //ez rakja össze a file-ból a nagy listát
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                dictionaryInList.add(Arrays.asList(values));
+            }
+        } catch (IOException e) {
+            System.out.println("wordRemover() exception: " + e);
+        }
+
+        for (int i = 0; i < dictionaryInList.size(); i++) {
+            engWordsList.add(dictionaryInList.get(i).get(0));
+            hunWordsList.add(dictionaryInList.get(i).get(1));
+        }
+        //bekérem a szót amit törölni szeretnék
+        System.out.println("Enter the word you want to remove: ");
+        String toBeRemovedWord = scanner();
+
+        if (engWordsList.contains(toBeRemovedWord) || hunWordsList.contains(toBeRemovedWord)) {
+            System.out.println("The " + toBeRemovedWord + " word is deleted.");
+            for (int i = 0; i < engWordsList.size(); i++) {
+                Pattern pattern = Pattern.compile(toBeRemovedWord);
+                Matcher matcher = pattern.matcher(engWordsList.get(i));
+                if (matcher.find()) {
+                    engWordsList.remove(i);
+                    hunWordsList.remove(i);
+
+                } else {
+                    Matcher matcher2 = pattern.matcher(hunWordsList.get(i));
+                    if (matcher2.find()) {
+                        engWordsList.remove(i);
+                        hunWordsList.remove(i);
+
+                    }
+                }
+            }
+            //a listákból újraírja a filet
+            String tempfile = "temp.txt";
+            File oldFile = new File(DICTIONARY_PATH);
+            File newFile = new File(tempfile);
+
+            try {
+                FileWriter fw = new FileWriter(tempfile, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+                PrintWriter pw = new PrintWriter((bw));
+
+                for (int i = 0; i < engWordsList.size(); i++) {
+                    pw.println(engWordsList.get(i) + "," + hunWordsList.get(i) + ",");
+                }
+                pw.flush();
+                pw.close();
+                oldFile.delete();
+                File dump = new File(DICTIONARY_PATH);
+                newFile.renameTo(dump);
+            } catch (IOException e) {
+                System.out.println("wordRemover() exception: " + e);
+            }
+            Menu.menu();
+
+        } else {
+            inputNotExisting(toBeRemovedWord);
+        }
     }
 }
