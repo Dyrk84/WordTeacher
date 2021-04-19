@@ -12,7 +12,7 @@ public class Menu {
     static WordTeacher wt = new WordTeacher();
 
     public void checkForFile() {
-        String dictionaryPath = ("src/main/resources/engWords.csv"); //relative path
+        String dictionaryPath = ("src/main/resources/dictionaryenghun.csv"); //relative path
         File f = new File(dictionaryPath);
         if (f.exists() && f.isFile()) {
             menu();

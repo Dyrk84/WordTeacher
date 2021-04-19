@@ -2,6 +2,7 @@ package com.wordteacher.tools;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import sun.awt.SunToolkit;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,9 +15,12 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.InputMismatchException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -35,7 +39,9 @@ public class WordTeacher {
 
     private boolean booleanExistingWord = false;
 
-    final private String DICTIONARY_PATH = "src/main/resources/engWords.csv";
+    final private String PATH_DICTIONARY_ENGHUN = "src/main/resources/dictionaryenghun.csv";
+    final private String PATH_ENGVALUES = "src/main/resources/engValues.csv";
+    final private String PATH_HUNVALUES = "src/main/resources/hunValues.csv";
 
     public void enteringAWordToLearn() {
         System.out.println("Enter the english form of the word:");
@@ -64,7 +70,7 @@ public class WordTeacher {
         String existingHunWord = "";
 
         try {
-            Scanner scanner = new Scanner(new File(DICTIONARY_PATH));
+            Scanner scanner = new Scanner(new File(PATH_DICTIONARY_ENGHUN));
             scanner.useDelimiter("[,\n]");
 
             while (scanner.hasNext() && !booleanEngWord) {
@@ -92,9 +98,17 @@ public class WordTeacher {
 
     private void wordsToFiles(String engWord, String hunWord) {
         try {
-            FileWriter fw = new FileWriter(DICTIONARY_PATH, true);
-            fw.write(engWord + "," + hunWord + "," + "\n");
-            fw.close();
+            FileWriter fwWords = new FileWriter(PATH_DICTIONARY_ENGHUN, true);
+            fwWords.write(engWord + "," + hunWord + "," + "\n");
+            fwWords.close();
+
+            FileWriter fwEngValues = new FileWriter(PATH_ENGVALUES, true);
+            fwEngValues.write(engWord + "," + 25 + "," + "\n");
+            fwEngValues.close();
+
+            FileWriter fwHunValues = new FileWriter(PATH_HUNVALUES, true);
+            fwHunValues.write(hunWord + "," + 25 + "," + "\n");
+            fwHunValues.close();
 
             System.out.println(GREEN.typeOfColor + "The specified word pair is added to the dictionary." + RESET.typeOfColor);
         } catch (Exception e) {
@@ -140,7 +154,7 @@ public class WordTeacher {
         String existingWord = "";
 
         try {
-            Scanner scanner = new Scanner(new File(DICTIONARY_PATH));
+            Scanner scanner = new Scanner(new File(PATH_DICTIONARY_ENGHUN));
             scanner.useDelimiter("[,\n]");
 
             while (scanner.hasNext() && !booleanExistingWord) {
@@ -180,7 +194,7 @@ public class WordTeacher {
 
         try {
             List<List<String>> dictionaryInList = new ArrayList<>();
-            try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(PATH_DICTIONARY_ENGHUN))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     String[] values = line.split(",");
@@ -226,7 +240,7 @@ public class WordTeacher {
 
         try {
             List<List<String>> dictionaryInList = new ArrayList<>();
-            try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(PATH_DICTIONARY_ENGHUN))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     String[] values = line.split(",");
@@ -254,7 +268,7 @@ public class WordTeacher {
             Set<String> setEngWords = new HashSet();
             MultiValuedMap<String, String> engDictionaryWithHunSynonyms = new ArrayListValuedHashMap<>(); //Multi Valued Map leírása: https://www.baeldung.com/apache-commons-multi-valued-map
 
-            try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) { //ez rakja össze a file-ból a nagy listát
+            try (BufferedReader br = new BufferedReader(new FileReader(PATH_DICTIONARY_ENGHUN))) { //ez rakja össze a file-ból a nagy listát
                 String line;
                 while ((line = br.readLine()) != null) {
                     String[] values = line.split(",");
@@ -296,7 +310,7 @@ public class WordTeacher {
             Set<String> setHunWords = new HashSet();
             MultiValuedMap<String, String> hunDictionaryWithEngSynonyms = new ArrayListValuedHashMap<>();
 
-            try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(PATH_DICTIONARY_ENGHUN))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     String[] values = line.split(",");
@@ -337,7 +351,7 @@ public class WordTeacher {
         List<String> engWordsList = new ArrayList<>();
         List<String> hunWordsList = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) { //ez rakja össze a file-ból a nagy listát
+        try (BufferedReader br = new BufferedReader(new FileReader(PATH_DICTIONARY_ENGHUN))) { //ez rakja össze a file-ból a nagy listát
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
@@ -363,7 +377,7 @@ public class WordTeacher {
             Collections.replaceAll(hunWordsList, toBeRewrittenWord, newWord);
             //a listákból újraírja a filet
             String tempfile = "temp.txt";
-            File oldFile = new File(DICTIONARY_PATH);
+            File oldFile = new File(PATH_DICTIONARY_ENGHUN);
             File newFile = new File(tempfile);
 
             try {
@@ -377,7 +391,7 @@ public class WordTeacher {
                 pw.flush();
                 pw.close();
                 oldFile.delete();
-                File dump = new File(DICTIONARY_PATH);
+                File dump = new File(PATH_DICTIONARY_ENGHUN);
                 newFile.renameTo(dump);
             } catch (IOException e) {
                 System.out.println("wordRewriter() exception: " + e);
@@ -394,7 +408,7 @@ public class WordTeacher {
         List<String> engWordsList = new ArrayList<>();
         List<String> hunWordsList = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) { //ez rakja össze a file-ból a nagy listát
+        try (BufferedReader br = new BufferedReader(new FileReader(PATH_DICTIONARY_ENGHUN))) { //ez rakja össze a file-ból a nagy listát
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
@@ -432,7 +446,7 @@ public class WordTeacher {
             }
             //a listákból újraírja a filet
             String tempfile = "temp.txt";
-            File oldFile = new File(DICTIONARY_PATH);
+            File oldFile = new File(PATH_DICTIONARY_ENGHUN);
             File newFile = new File(tempfile);
 
             try {
@@ -446,7 +460,7 @@ public class WordTeacher {
                 pw.flush();
                 pw.close();
                 oldFile.delete();
-                File dump = new File(DICTIONARY_PATH);
+                File dump = new File(PATH_DICTIONARY_ENGHUN);
                 newFile.renameTo(dump);
             } catch (IOException e) {
                 System.out.println("wordRemover() exception: " + e);
@@ -458,19 +472,21 @@ public class WordTeacher {
         }
     }
 
-    public void repeaterEng(){
+    public void repeaterEng() {
         System.out.println("How many words you need?");
         repeatNum = scannerNum();
-        for (int i = 0; i < repeatNum; i++){
+        for (int i = 0; i < repeatNum; i++) {
+            System.out.println("Question " + (i + 1));
             wordQuizEng();
         }
         repeaterEnd();
     }
 
-    public void repeaterHun(){
+    public void repeaterHun() {
         System.out.println("How many words you need?");
         repeatNum = scannerNum();
-        for (int i = 0; i < repeatNum; i++){
+        for (int i = 0; i < repeatNum; i++) {
+            System.out.println("Question " + (i + 1));
             wordQuizHun();
         }
         repeaterEnd();
@@ -487,98 +503,205 @@ public class WordTeacher {
         }
     }
 
-    private void repeaterEnd(){
-        System.out.println("The correct answers number together: " + repeatNum + "/" + goodAnswer);
+    private void repeaterEnd() {
+        System.out.println("Asked words / correct answers: " + repeatNum + "/" + goodAnswer); //TODO miért kékül ez be futtatásnál a perjel után?
         goodAnswer = 0;
         repeatNum = 0;
         Menu.menu();
     }
 
-    public void wordQuizEng(){
+    private void wordQuizEng() {
 
         List<List<String>> dictionaryInList = new ArrayList<>();
-        Set<String> setEngWords = new HashSet();
         MultiValuedMap<String, String> engDictionaryWithHunSynonyms = new ArrayListValuedHashMap<>(); //Multi Valued Map leírása: https://www.baeldung.com/apache-commons-multi-valued-map
 
-        try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) { //ez rakja össze a file-ból a nagy listát
+        try (BufferedReader br = new BufferedReader(new FileReader(PATH_DICTIONARY_ENGHUN))) { //ez rakja össze a szótárból a tömbös listát
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
                 dictionaryInList.add(Arrays.asList(values));
             }
         } catch (IOException e) {
-            System.out.println("wordRemover() exception: " + e);
+            System.out.println("wordQuizEng() exception: " + e);
         }
 
         for (int i = 0; i < dictionaryInList.size(); i++) { //feltölti a multiMapet a fileból kiolvasott lista elemeivel
             engDictionaryWithHunSynonyms.put(dictionaryInList.get(i).get(0), dictionaryInList.get(i).get(1));
         }
 
-
-        for (int i = 0; i < dictionaryInList.size(); i++) { //ez csinálja meg az angol set listát
-            setEngWords.add(dictionaryInList.get(i).get(0));
+        List<List<String>> engValuesList = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(PATH_ENGVALUES))) { //ez rakja össze az engvalues file-ból a tömbös listát
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                engValuesList.add(Arrays.asList(values));
+            }
+        } catch (IOException e) {
+            System.out.println("wordQuizEng() exception: " + e);
         }
 
-        List<String> engWordsList = new ArrayList<>(setEngWords);
+        List<String> engValuesWords = new ArrayList<>(); //csinál egy String listát a tömbös lista első oszlopából
+        for (int i = 0; i < engValuesList.size(); i++) {
+            engValuesWords.add(engValuesList.get(i).get(0));
+        }
 
-        Collections.shuffle(engWordsList);
-        String askedWord = engWordsList.get(0);
-        System.out.println("What does the english word mean: " + BLUE.typeOfColor + askedWord + RESET.typeOfColor + "?");
+        List<String> engValuesNumbers = new ArrayList<>(); //csinál egy String listát a tömbös lista második oszlopából
+        for (int i = 0; i < engValuesList.size(); i++) {
+            engValuesNumbers.add(engValuesList.get(i).get(1));
+        }
+        List<Integer> engValues = engValuesNumbers.stream().map(Integer::valueOf).collect(Collectors.toList()); //Integer listává alakítja a String listát
+
+        Map<String, Integer> engMap = new HashMap<>(); //létrehoztam a map-et a random kérdezés miatt
+        for (int i = 0; i < engValuesWords.size(); i++) {
+            engMap.put(engValuesWords.get(i), engValues.get(i));
+        }
+
+        Set<String> setEngValuesWords = new HashSet(engValuesWords); //ez csinálja meg a values set listát hogy ne legyenek duplán szavak
+
+        List<String> engWordsListNoDuplicates = new ArrayList<>(setEngValuesWords); //ez a lista már nem tartalmaz dupla szavakat.
+
+        List<String> questionList = new ArrayList<>(); //ebből a listából fog kérdezni
+
+        while (questionList.size() < 1) { //ezzel védem le, hogy hogyha olyan kicsi a random szám, hogy egy szó sincs olyan alacsony értéken, akkor ne fagyjon le a progi
+            int randomNum = (int) (Math.random() * (100)) + 1; //random szám generátor 1-100-ig
+            for (int i = 0; i < engMap.size(); i++) { //megnézi, hogy melyik values kisebb mint a dobott érték, és bemásolja a szót a kérdezéshez létrehozott listába
+                if (engMap.get(engWordsListNoDuplicates.get(i)) < randomNum) {
+                    questionList.add(engWordsListNoDuplicates.get(i));
+                }
+            }
+        }
+
+        Collections.shuffle(questionList);
+        String askedWord = questionList.get(0);
+        System.out.println("What does the hungarian word mean: " + BLUE.typeOfColor + askedWord + RESET.typeOfColor + "?");
         System.out.print("Write the correct answer here: ");
         String answeredWord = scanner();
 
-        if (engDictionaryWithHunSynonyms.get(askedWord).contains(answeredWord)){
-            System.out.println("jár a jutifalat!");
-            goodAnswer++;
-        } else {
-            System.out.println("hülye vagy fiam mint szódás a lovát!");
-            System.out.println("The possible answer is: " + GREEN.typeOfColor +
-                    engDictionaryWithHunSynonyms.get(engWordsList.get(0)) + RESET.typeOfColor);
-        }
-        Menu.menu();
+        if (engDictionaryWithHunSynonyms.get(askedWord).
 
+                contains(answeredWord)) { //ezzel nézem meg, hogy a kérdezett szóhoz tartozik-e olyan value, mint a válasz szó a könyvtármapban.
+            System.out.println(GREEN.typeOfColor + "jár a jutifalat!" + RESET.typeOfColor);
+            goodAnswer++;
+            engMap.put(questionList.get(0), engMap.get(askedWord) + 1); //ezzel módosítom a mapban a kérdezett szó-hoz (key) tartozó value-t.
+        } else {
+            System.out.println(RED.typeOfColor + "hülye vagy fiam mint szódás a lovát!" + RESET.typeOfColor);
+            engMap.put(questionList.get(0), engMap.get(askedWord) - 2);
+            System.out.println("The possible answer is: " + GREEN.typeOfColor +
+                    engDictionaryWithHunSynonyms.get(askedWord) + RESET.typeOfColor);
+        }
+
+        valueFilesRewriter(engMap, PATH_ENGVALUES);
     }
 
-    public void wordQuizHun(){
+    private void wordQuizHun() {
 
         List<List<String>> dictionaryInList = new ArrayList<>();
-        Set<String> setHunWords = new HashSet();
         MultiValuedMap<String, String> hunDictionaryWithEngSynonyms = new ArrayListValuedHashMap<>(); //Multi Valued Map leírása: https://www.baeldung.com/apache-commons-multi-valued-map
 
-        try (BufferedReader br = new BufferedReader(new FileReader(DICTIONARY_PATH))) { //ez rakja össze a file-ból a nagy listát
+        try (BufferedReader br = new BufferedReader(new FileReader(PATH_DICTIONARY_ENGHUN))) { //ez rakja össze a szótárból a tömbös listát
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
                 dictionaryInList.add(Arrays.asList(values));
             }
         } catch (IOException e) {
-            System.out.println("wordRemover() exception: " + e);
+            System.out.println("wordQuizHun() exception: " + e);
         }
 
         for (int i = 0; i < dictionaryInList.size(); i++) { //feltölti a multiMapet a fileból kiolvasott lista elemeivel
             hunDictionaryWithEngSynonyms.put(dictionaryInList.get(i).get(1), dictionaryInList.get(i).get(0));
         }
 
-
-        for (int i = 0; i < dictionaryInList.size(); i++) { //ez csinálja meg az angol set listát
-            setHunWords.add(dictionaryInList.get(i).get(1));
+        List<List<String>> hunValuesList = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(PATH_HUNVALUES))) { //ez rakja össze a hunvalues file-ból a tömbös listát
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                hunValuesList.add(Arrays.asList(values));
+            }
+        } catch (IOException e) {
+            System.out.println("wordQuizHun() exception: " + e);
         }
 
-        List<String> hunWordsList = new ArrayList<>(setHunWords);
+        List<String> hunValuesWords = new ArrayList<>(); //csinál egy String listát a tömbös lista első oszlopából
+        for (int i = 0; i < hunValuesList.size(); i++) {
+            hunValuesWords.add(hunValuesList.get(i).get(0));
+        }
 
-        Collections.shuffle(hunWordsList);
-        String askedWord = hunWordsList.get(0);
+        List<String> hunValuesNumbers = new ArrayList<>(); //csinál egy String listát a tömbös lista második oszlopából
+        for (int i = 0; i < hunValuesList.size(); i++) {
+            hunValuesNumbers.add(hunValuesList.get(i).get(1));
+        }
+        List<Integer> hunValues = hunValuesNumbers.stream().map(Integer::valueOf).collect(Collectors.toList()); //Integer listává alakítja a String listát
+
+        Map<String, Integer> hunMap = new HashMap<>(); //létrehoztam a map-et a random kérdezés miatt
+        for (int i = 0; i < hunValuesWords.size(); i++) {
+            hunMap.put(hunValuesWords.get(i), hunValues.get(i));
+        }
+
+        Set<String> setHunValuesWords = new HashSet(hunValuesWords); //ez csinálja meg a values set listát hogy ne legyenek duplán szavak
+
+        List<String> hunWordsListNoDuplicates = new ArrayList<>(setHunValuesWords); //ez a lista már nem tartalmaz dupla szavakat.
+
+        List<String> questionList = new ArrayList<>(); //ebből a listából fog kérdezni
+
+        while (questionList.size() < 1) { //ezzel védem le, hogy hogyha olyan kicsi a random szám, hogy egy szó sincs olyan alacsony értéken, akkor ne fagyjon le a progi
+            int randomNum = (int) (Math.random() * (100)) + 1; //random szám generátor 1-100-ig
+            for (int i = 0; i < hunMap.size(); i++) { //megnézi, hogy melyik values kisebb mint a dobott érték, és bemásolja a szót a kérdezéshez létrehozott listába
+                if (hunMap.get(hunWordsListNoDuplicates.get(i)) < randomNum) {
+                    questionList.add(hunWordsListNoDuplicates.get(i));
+                }
+            }
+        }
+
+        Collections.shuffle(questionList);
+        String askedWord = questionList.get(0);
         System.out.println("What does the hungarian word mean: " + BLUE.typeOfColor + askedWord + RESET.typeOfColor + "?");
         System.out.print("Write the correct answer here: ");
         String answeredWord = scanner();
 
-        if (hunDictionaryWithEngSynonyms.get(askedWord).contains(answeredWord)){
+        if (hunDictionaryWithEngSynonyms.get(askedWord).
+
+                contains(answeredWord)) { //ezzel nézem meg, hogy a kérdezett szóhoz tartozik-e olyan value, mint a válasz szó a könyvtármapban.
             System.out.println(GREEN.typeOfColor + "jár a jutifalat!" + RESET.typeOfColor);
             goodAnswer++;
+            hunMap.put(questionList.get(0), hunMap.get(askedWord) + 1); //ezzel módosítom a mapban a kérdezett szó-hoz (key) tartozó value-t.
         } else {
             System.out.println(RED.typeOfColor + "hülye vagy fiam mint szódás a lovát!" + RESET.typeOfColor);
+            hunMap.put(questionList.get(0), hunMap.get(askedWord) - 2);
             System.out.println("The possible answer is: " + GREEN.typeOfColor +
-                    hunDictionaryWithEngSynonyms.get(hunWordsList.get(0)) + RESET.typeOfColor);
+                    hunDictionaryWithEngSynonyms.get(askedWord) + RESET.typeOfColor);
+        }
+
+        valueFilesRewriter(hunMap, PATH_HUNVALUES);
+    }
+
+    private void valueFilesRewriter(Map<String, Integer> hunMap, String path) {
+        String tempfile = "temp.txt";
+        File oldFile = new File(path);
+        File newFile = new File(tempfile);
+
+        try {
+            FileWriter fw = new FileWriter(tempfile, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter pw = new PrintWriter((bw));
+
+            Iterator<Map.Entry<String, Integer>> iterator = hunMap.entrySet().iterator(); //iterátor, hogy végig tudjak iterálni a hunMap keyein és valuein.
+            while (iterator.hasNext()) {
+                Map.Entry<String, Integer> entry = iterator.next();
+                pw.println(entry.getKey() + "," + entry.getValue() + ",");
+            }
+
+            pw.flush();
+            pw.close();
+            oldFile.delete();
+            File dump = new File(path);
+            newFile.renameTo(dump);
+        } catch (
+                IOException e) {
+            System.out.println("valueFilesRewriter(Map<String, Integer> hunMap, String path) exception: " + e);
         }
     }
+
+
 }
