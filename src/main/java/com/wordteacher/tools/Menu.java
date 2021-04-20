@@ -11,8 +11,8 @@ import static com.wordteacher.utils.Colors.RED;
 public class Menu {
     static WordTeacher wt = new WordTeacher();
 
-    public static void checkForFile() {
-        String dictionaryPath = "D:\\DyrkWork\\WordTeacher\\engWords.csv";
+    public void checkForFile() {
+        String dictionaryPath = ("src/main/resources/dictionaryenghun.csv"); //relative path
         File f = new File(dictionaryPath);
         if (f.exists() && f.isFile()) {
             menu();
@@ -35,18 +35,22 @@ public class Menu {
     }
 
     public static void menu() {
+        printMenu();
         int chosenNumber = chosenNumber();
         switch (chosenNumber) {
             case 1:
-                wt.enteringAWordToLearn();
+                wordQuiz();
                 break;
             case 2:
-                wt.inputForTranslateEng();
+                operationsWithWords();
                 break;
             case 3:
-                wt.inputForTranslateHun();
+                dictionaryOverviews();
                 break;
             case 4:
+                translate();
+                break;
+            case 5:
                 exit();
                 break;
             default:
@@ -55,9 +59,93 @@ public class Menu {
         }
     }
 
+    private static void wordQuiz(){
+        printWordQuiz();
+        int chosenNumber = chosenNumber();
+        switch (chosenNumber) {
+            case 1:
+                wt.repeaterEng();
+                break;
+            case 2:
+                wt.repeaterHun();
+                break;
+            case 3:
+                wt.repeaterUnlearnedEng();
+                break;
+            case 4:
+                wt.repeaterUnlearnedHun();
+                break;
+            case 5:
+                menu();
+                break;
+            default:
+                yourChooseIsNotAppropriate();
+                wordQuiz();
+        }
+    }
+
+    private static void operationsWithWords() {
+        printOperationsWithWords();
+        int chosenNumber = chosenNumber();
+        switch (chosenNumber) {
+            case 1:
+                wt.enteringAWordToLearn();
+                break;
+            case 2:
+                wt.wordRewriter();
+                break;
+            case 3:
+                wt.wordRemover();
+                break;
+            case 4:
+                menu();
+                break;
+            default:
+                yourChooseIsNotAppropriate();
+                operationsWithWords();
+        }
+    }
+
+    private static void dictionaryOverviews() {
+        printDictionaryOverviews();
+        int chosenNumber = chosenNumber();
+        switch (chosenNumber) {
+            case 1:
+                wt.dictionaryOverviewEngHun();
+                break;
+            case 2:
+                wt.dictionaryOverviewHunEng();
+                break;
+            case 3:
+                menu();
+                break;
+            default:
+                yourChooseIsNotAppropriate();
+                dictionaryOverviews();
+        }
+    }
+
+    private static void translate() {
+        printTranslate();
+        int chosenNumber = chosenNumber();
+        switch (chosenNumber) {
+            case 1:
+                wt.inputForTranslateEng();
+                break;
+            case 2:
+                wt.inputForTranslateHun();
+                break;
+            case 3:
+                menu();
+                break;
+            default:
+                yourChooseIsNotAppropriate();
+                translate();
+        }
+    }
+
     private static int chosenNumber() {
         do {
-            printMenu();
             System.out.print("Chosen one from the menu options: ");
             Scanner scanner = new Scanner(System.in);
             try {
@@ -69,13 +157,57 @@ public class Menu {
     }
 
     private static void printMenu() {
-        System.out.println("*********************** Menu *****************************");
+        System.out.println("********************* Main menu **************************");
+        System.out.println("*" + RED.typeOfColor + " Choose one of the following possibilities:            " + RESET.typeOfColor +
+                " *");
+        System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Word Quiz                                           *");
+        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Operations with Words                               *");
+        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Dictionary overviews                                *");
+        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Translate                                           *");
+        System.out.println("* " + RED.typeOfColor + "5." + RESET.typeOfColor + " Exit                                                *");
+        System.out.println("**********************************************************");
+    }
+
+    private static void printWordQuiz() {
+        System.out.println("********************* Word Quiz **************************");
+        System.out.println("*" + RED.typeOfColor + " Choose one of the following possibilities:            " + RESET.typeOfColor +
+                " *");
+        System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Word Quiz Eng-Hun                                   *");
+        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Word Quiz Hun-Eng                                   *");
+        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Word Quiz unlearned Eng-Hun                         *");
+        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Word Quiz unlearned Hun-Eng                         *");
+        System.out.println("* " + RED.typeOfColor + "5." + RESET.typeOfColor + " Back to the main menu                               *");
+        System.out.println("**********************************************************");
+    }
+
+    private static void printOperationsWithWords() {
+        System.out.println("**************** Operations with Words *******************");
         System.out.println("*" + RED.typeOfColor + " Choose one of the following possibilities:            " + RESET.typeOfColor +
                 " *");
         System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Entering a word to learn                            *");
-        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Translate from english to hungarian                 *");
-        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Translate from hungarian to english                 *");
-        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Exit                                                *");
+        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Rewrite a word                                      *");
+        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Delete a word                                       *");
+        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Back to the main menu                               *");
+        System.out.println("**********************************************************");
+    }
+
+    private static void printDictionaryOverviews() {
+        System.out.println("***************** Dictionary overviews *******************");
+        System.out.println("*" + RED.typeOfColor + " Choose one of the following possibilities:            " + RESET.typeOfColor +
+                " *");
+        System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Dictionary overview Eng-Hun                         *");
+        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Dictionary overview Hun-Eng                         *");
+        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Back to the main menu                               *");
+        System.out.println("**********************************************************");
+    }
+
+    private static void printTranslate() {
+        System.out.println("********** Translate from english to hungarian ***********");
+        System.out.println("*" + RED.typeOfColor + " Choose one of the following possibilities:            " + RESET.typeOfColor +
+                " *");
+        System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Translate from english to hungarian                 *");
+        System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Translate from hungarian to english                 *");
+        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Back to the main menu                               *");
         System.out.println("**********************************************************");
     }
 

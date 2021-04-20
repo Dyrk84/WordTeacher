@@ -5,7 +5,8 @@ import com.wordteacher.tools.Menu;
 
 public class Main {
     public static void main(String[] args) {
-        Menu.checkForFile();
+        Menu menu = new Menu();
+        menu.checkForFile();
     }
 
 
