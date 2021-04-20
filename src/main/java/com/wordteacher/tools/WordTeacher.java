@@ -2,7 +2,6 @@ package com.wordteacher.tools;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import sun.awt.SunToolkit;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -36,6 +35,8 @@ public class WordTeacher {
 
     private int repeatNum;
     private int goodAnswer = 0;
+    private int newWordsRecordCounter = 0;
+    private int chanceNumber = 0;
 
     private boolean booleanExistingWord = false;
 
@@ -50,7 +51,7 @@ public class WordTeacher {
         String hunWord = scanner();
         knownWordsTest(engWord, hunWord);
         repeatAsk();
-        Menu.menu();
+
     }
 
     private void repeatAsk() {
@@ -61,6 +62,20 @@ public class WordTeacher {
         String answer = scanner.next();
         if (answer.equals("yes") || answer.equals("y")) {
             enteringAWordToLearn();
+        } else {
+            try {
+                FileWriter fw = new FileWriter("src/main/resources/results.csv", true);
+                BufferedWriter bw = new BufferedWriter(fw);
+                PrintWriter pw = new PrintWriter((bw));
+
+                pw.print("new words recorded :" + newWordsRecordCounter +" ");
+                pw.println(java.time.LocalDate.now() + " " + java.time.LocalTime.now());
+                pw.flush();
+                pw.close();
+            } catch (IOException e) {
+                System.out.println("repeatAsk() exception: " + e);
+            }
+            Menu.menu();
         }
     }
 
@@ -122,6 +137,7 @@ public class WordTeacher {
             fwHunValues.write(hunWord + "," + 25 + "," + "\n");
             fwHunValues.close();
 
+            newWordsRecordCounter++;
             System.out.println(GREEN.typeOfColor + "The specified word pair is added to the dictionary." + RESET.typeOfColor);
         } catch (Exception e) {
             System.out.println("Record not saved");
@@ -431,24 +447,55 @@ public class WordTeacher {
         }
     }
 
-    public void repeaterEng() {
+    public void repeaterUnlearnedEng() {
+        howManyWordsYouNeed();
+        chanceNumber = 26;
+        wordQuizEngIterator(chanceNumber);
+        String quizType = "Unlearned Eng-Hun";
+        repeaterEnd(quizType);
+    }
+
+    public void repeaterUnlearnedHun() {
+        howManyWordsYouNeed();
+        chanceNumber = 26;
+        wordQuizHunIterator(chanceNumber);
+        String quizType = "Unlearned Hun-Eng";
+        repeaterEnd(quizType);
+    }
+
+    private void howManyWordsYouNeed() {
         System.out.println("How many words you need?");
         repeatNum = scannerNum();
+    }
+
+    private void wordQuizEngIterator(int chanceNumber) {
         for (int i = 0; i < repeatNum; i++) {
             System.out.println("Question " + (i + 1));
-            wordQuizEng();
+            wordQuizEng(chanceNumber);
         }
-        repeaterEnd();
+    }
+
+    private void wordQuizHunIterator(int chanceNumber) {
+        for (int i = 0; i < repeatNum; i++) {
+            System.out.println("Question " + (i + 1));
+            wordQuizHun(chanceNumber);
+        }
+    }
+
+    public void repeaterEng() {
+        howManyWordsYouNeed();
+        chanceNumber = 100;
+        wordQuizEngIterator(chanceNumber);
+        String quizType = "Eng-Hun";
+        repeaterEnd(quizType);
     }
 
     public void repeaterHun() {
-        System.out.println("How many words you need?");
-        repeatNum = scannerNum();
-        for (int i = 0; i < repeatNum; i++) {
-            System.out.println("Question " + (i + 1));
-            wordQuizHun();
-        }
-        repeaterEnd();
+        howManyWordsYouNeed();
+        chanceNumber = 100;
+        wordQuizHunIterator(chanceNumber);
+        String quizType = "Hun-Eng";
+        repeaterEnd(quizType);
     }
 
     private int scannerNum() {
@@ -462,14 +509,30 @@ public class WordTeacher {
         }
     }
 
-    private void repeaterEnd() {
-        System.out.println("Asked words / correct answers: " + repeatNum + "/" + goodAnswer); //TODO miért kékül ez be futtatásnál a perjel után?
-        goodAnswer = 0;
+    private void repeaterEnd(String quizType) {
+        int result = goodAnswer * 100 / repeatNum ;
+        System.out.println(quizType + " Asked words - correct answers: " + repeatNum + " - " + goodAnswer + ". This is " + result + "%."); //TODO miért kékül ez be futtatásnál a perjel után?
+
+        try {
+            FileWriter fw = new FileWriter("src/main/resources/results.csv", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter pw = new PrintWriter((bw));
+
+            pw.print(quizType + " " + repeatNum + "/" + goodAnswer + " = " + result + "% Quiz end date: ");
+            pw.println(java.time.LocalDate.now() + " " + java.time.LocalTime.now());
+            pw.flush();
+            pw.close();
+        } catch (IOException e) {
+            System.out.println("repeaterEnd() exception: " + e);
+        }
+
         repeatNum = 0;
+        goodAnswer = 0;
+        chanceNumber = 100;
         Menu.menu();
     }
 
-    private void wordQuizEng() {
+    private void wordQuizEng(int chanceNumber) {
 
         List<List<String>> dictionaryInList = new ArrayList<>();
         MultiValuedMap<String, String> engDictionaryWithHunSynonyms = new ArrayListValuedHashMap<>(); //Multi Valued Map leírása: https://www.baeldung.com/apache-commons-multi-valued-map
@@ -506,7 +569,7 @@ public class WordTeacher {
         List<String> questionList = new ArrayList<>(); //ebből a listából fog kérdezni
 
         while (questionList.size() < 1) { //ezzel védem le, hogy hogyha olyan kicsi a random szám, hogy egy szó sincs olyan alacsony értéken, akkor ne fagyjon le a progi
-            int randomNum = (int) (Math.random() * (100)) + 1; //random szám generátor 1-100-ig
+            int randomNum = (int) (Math.random() * (chanceNumber)) + 1; //random szám generátor 1-100-ig
             for (int i = 0; i < engMap.size(); i++) { //megnézi, hogy melyik values kisebb mint a dobott érték, és bemásolja a szót a kérdezéshez létrehozott listába
                 if (engMap.get(engWordsListNoDuplicates.get(i)) < randomNum) {
                     questionList.add(engWordsListNoDuplicates.get(i));
@@ -525,7 +588,7 @@ public class WordTeacher {
         valueFilesRewriter(engMap, PATH_ENGVALUES);
     }
 
-    private void wordQuizHun() {
+    private void wordQuizHun(int chanceNumber) {
 
         List<List<String>> dictionaryInList = new ArrayList<>();
         MultiValuedMap<String, String> hunDictionaryWithEngSynonyms = new ArrayListValuedHashMap<>(); //Multi Valued Map leírása: https://www.baeldung.com/apache-commons-multi-valued-map
@@ -562,7 +625,7 @@ public class WordTeacher {
         List<String> questionList = new ArrayList<>(); //ebből a listából fog kérdezni
 
         while (questionList.size() < 1) { //ezzel védem le, hogy hogyha olyan kicsi a random szám, hogy egy szó sincs olyan alacsony értéken, akkor ne fagyjon le a progi
-            int randomNum = (int) (Math.random() * (100)) + 1; //random szám generátor 1-100-ig
+            int randomNum = (int) (Math.random() * (chanceNumber)) + 1; //random szám generátor 1-100-ig
             for (int i = 0; i < hunMap.size(); i++) { //megnézi, hogy melyik values kisebb mint a dobott érték, és bemásolja a szót a kérdezéshez létrehozott listába
                 if (hunMap.get(hunWordsListNoDuplicates.get(i)) < randomNum) {
                     questionList.add(hunWordsListNoDuplicates.get(i));

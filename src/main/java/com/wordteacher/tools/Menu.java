@@ -70,6 +70,12 @@ public class Menu {
                 wt.repeaterHun();
                 break;
             case 3:
+                wt.repeaterUnlearnedEng();
+                break;
+            case 4:
+                wt.repeaterUnlearnedHun();
+                break;
+            case 5:
                 menu();
                 break;
             default:
@@ -157,7 +163,7 @@ public class Menu {
         System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Word Quiz                                           *");
         System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Operations with Words                               *");
         System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Dictionary overviews                                *");
-        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Translate from english to hungarian                 *");
+        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Translate                                           *");
         System.out.println("* " + RED.typeOfColor + "5." + RESET.typeOfColor + " Exit                                                *");
         System.out.println("**********************************************************");
     }
@@ -168,7 +174,9 @@ public class Menu {
                 " *");
         System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Word Quiz Eng-Hun                                   *");
         System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Word Quiz Hun-Eng                                   *");
-        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Back to the main menu                               *");
+        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Word Quiz unlearned Eng-Hun                         *");
+        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Word Quiz unlearned Hun-Eng                         *");
+        System.out.println("* " + RED.typeOfColor + "5." + RESET.typeOfColor + " Back to the main menu                               *");
         System.out.println("**********************************************************");
     }
 
