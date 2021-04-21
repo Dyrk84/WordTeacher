@@ -4,7 +4,8 @@ public enum Colors {
     RESET("\u001B[0m"),
     RED("\u001B[31m"),
     BLUE("\u001B[34m"),
-    GREEN("\u001B[32m");
+    GREEN("\u001B[32m"),
+    CYAN("\u001B[36m");
 
     public final String typeOfColor;
 
