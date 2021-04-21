@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.wordteacher.utils.Colors.BLUE;
+import static com.wordteacher.utils.Colors.CYAN;
 import static com.wordteacher.utils.Colors.GREEN;
 import static com.wordteacher.utils.Colors.RED;
 import static com.wordteacher.utils.Colors.RESET;
@@ -37,6 +38,7 @@ public class WordTeacher {
     private int goodAnswer = 0;
     private int newWordsRecordCounter = 0;
     private int chanceNumber = 0;
+    private int noMoreWords = 0;
 
     private boolean booleanExistingWord = false;
 
@@ -68,7 +70,7 @@ public class WordTeacher {
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter pw = new PrintWriter((bw));
 
-                pw.print("new words recorded :" + newWordsRecordCounter +" ");
+                pw.print("new words recorded :" + newWordsRecordCounter + " ");
                 pw.println(java.time.LocalDate.now() + " " + java.time.LocalTime.now());
                 pw.flush();
                 pw.close();
@@ -470,15 +472,23 @@ public class WordTeacher {
 
     private void wordQuizEngIterator(int chanceNumber) {
         for (int i = 0; i < repeatNum; i++) {
-            System.out.println("Question " + (i + 1));
-            wordQuizEng(chanceNumber);
+            if (noMoreWords >= 1000) {
+                i = repeatNum;
+            } else {
+                System.out.println("Question " + (i + 1));
+                wordQuizEng(chanceNumber);
+            }
         }
     }
 
     private void wordQuizHunIterator(int chanceNumber) {
         for (int i = 0; i < repeatNum; i++) {
-            System.out.println("Question " + (i + 1));
-            wordQuizHun(chanceNumber);
+            if (noMoreWords >= 1000) {
+                i = repeatNum;
+            } else {
+                System.out.println("Question " + (i + 1));
+                wordQuizHun(chanceNumber);
+            }
         }
     }
 
@@ -510,7 +520,7 @@ public class WordTeacher {
     }
 
     private void repeaterEnd(String quizType) {
-        int result = goodAnswer * 100 / repeatNum ;
+        int result = goodAnswer * 100 / repeatNum;
         System.out.println(quizType + " Asked words - correct answers: " + repeatNum + " - " + goodAnswer + ". This is " + result + "%."); //TODO miért kékül ez be futtatásnál a perjel után?
 
         try {
@@ -518,7 +528,16 @@ public class WordTeacher {
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter pw = new PrintWriter((bw));
 
-            pw.print(quizType + " " + repeatNum + "/" + goodAnswer + " = " + result + "% Quiz end date: ");
+            if (noMoreWords >= 1000) {
+                if (chanceNumber == 26) {
+                    pw.print("Congratulation! You learned the unlearned words! Date: ");
+                }
+                if (chanceNumber == 100) {
+                    pw.print("Congratulation! You learned all words! Date: ");
+                }
+            } else {
+                pw.print(quizType + " " + repeatNum + "/" + goodAnswer + " = " + result + "% Quiz end date: ");
+            }
             pw.println(java.time.LocalDate.now() + " " + java.time.LocalTime.now());
             pw.flush();
             pw.close();
@@ -529,6 +548,7 @@ public class WordTeacher {
         repeatNum = 0;
         goodAnswer = 0;
         chanceNumber = 100;
+        noMoreWords = 0;
         Menu.menu();
     }
 
@@ -568,24 +588,41 @@ public class WordTeacher {
 
         List<String> questionList = new ArrayList<>(); //ebből a listából fog kérdezni
 
-        while (questionList.size() < 1) { //ezzel védem le, hogy hogyha olyan kicsi a random szám, hogy egy szó sincs olyan alacsony értéken, akkor ne fagyjon le a progi
+        while (questionList.size() < 1 && noMoreWords < 1000) { // ez dobatja újra a random számot, ha nincs rá szó találat. Ha túl sokszor fut le, akkor azt jelenti, hogy nincs már olyan típusú szó, ami tanulható.
+            noMoreWords++;
             int randomNum = (int) (Math.random() * (chanceNumber)) + 1; //random szám generátor 1-100-ig
             for (int i = 0; i < engMap.size(); i++) { //megnézi, hogy melyik values kisebb mint a dobott érték, és bemásolja a szót a kérdezéshez létrehozott listába
                 if (engMap.get(engWordsListNoDuplicates.get(i)) < randomNum) {
                     questionList.add(engWordsListNoDuplicates.get(i));
+
                 }
             }
         }
 
         Collections.shuffle(questionList);
-        String askedWord = questionList.get(0);
-        System.out.println("What does the hungarian word mean: " + BLUE.typeOfColor + askedWord + RESET.typeOfColor + "?");
-        System.out.print("Write the correct answer here: ");
-        String answeredWord = scanner();
+        if (questionList.size() == 0) {
+            ifNoMoreQuestion(chanceNumber);
+        } else {
+            String askedWord = questionList.get(0);
+            System.out.println("What does the hungarian word mean: " + BLUE.typeOfColor + askedWord + RESET.typeOfColor);
+            System.out.print("Write the correct answer here: ");
+            String answeredWord = scanner();
 
-        answerChecker(engDictionaryWithHunSynonyms, engMap, questionList, askedWord, answeredWord);
+            answerChecker(engDictionaryWithHunSynonyms, engMap, questionList, askedWord, answeredWord);
 
-        valueFilesRewriter(engMap, PATH_ENGVALUES);
+            valueFilesRewriter(engMap, PATH_ENGVALUES);
+        }
+    }
+
+    private void ifNoMoreQuestion(int chanceNumber) {
+        if (noMoreWords >= 1000) {
+            if (chanceNumber == 26) {
+                System.out.println(CYAN.typeOfColor + "Congratulation! You learned the unlearned words!" + RESET.typeOfColor);
+            }
+            if (chanceNumber == 100) {
+                System.out.println(CYAN.typeOfColor + "Congratulation! You learned all words!" + RESET.typeOfColor);
+            }
+        }
     }
 
     private void wordQuizHun(int chanceNumber) {
@@ -623,8 +660,8 @@ public class WordTeacher {
         List<String> hunWordsListNoDuplicates = new ArrayList<>(setHunValuesWords); //ez a lista már nem tartalmaz dupla szavakat.
 
         List<String> questionList = new ArrayList<>(); //ebből a listából fog kérdezni
-
-        while (questionList.size() < 1) { //ezzel védem le, hogy hogyha olyan kicsi a random szám, hogy egy szó sincs olyan alacsony értéken, akkor ne fagyjon le a progi
+        while (questionList.size() < 1 && noMoreWords < 1000) { // ez dobatja újra a random számot, ha nincs rá szó találat. Ha túl sokszor fut le, akkor azt jelenti, hogy nincs már olyan típusú szó, ami tanulható.
+            noMoreWords++;
             int randomNum = (int) (Math.random() * (chanceNumber)) + 1; //random szám generátor 1-100-ig
             for (int i = 0; i < hunMap.size(); i++) { //megnézi, hogy melyik values kisebb mint a dobott érték, és bemásolja a szót a kérdezéshez létrehozott listába
                 if (hunMap.get(hunWordsListNoDuplicates.get(i)) < randomNum) {
@@ -634,14 +671,18 @@ public class WordTeacher {
         }
 
         Collections.shuffle(questionList);
-        String askedWord = questionList.get(0);
-        System.out.println("What does the hungarian word mean: " + BLUE.typeOfColor + askedWord + RESET.typeOfColor + "?");
-        System.out.print("Write the correct answer here: ");
-        String answeredWord = scanner();
+        if (questionList.size() == 0) {
+            ifNoMoreQuestion(chanceNumber);
+        } else {
+            String askedWord = questionList.get(0);
+            System.out.println("What does the hungarian word mean: " + BLUE.typeOfColor + askedWord + RESET.typeOfColor);
+            System.out.print("Write the correct answer here: ");
+            String answeredWord = scanner();
 
-        answerChecker(hunDictionaryWithEngSynonyms, hunMap, questionList, askedWord, answeredWord);
+            answerChecker(hunDictionaryWithEngSynonyms, hunMap, questionList, askedWord, answeredWord);
 
-        valueFilesRewriter(hunMap, PATH_HUNVALUES);
+            valueFilesRewriter(hunMap, PATH_HUNVALUES);
+        }
     }
 
     private void readFromFileToListList(List<List<String>> dictionaryInList, String path) {
@@ -656,16 +697,17 @@ public class WordTeacher {
         }
     }
 
-    private void answerChecker(MultiValuedMap<String, String> hunDictionaryWithEngSynonyms, Map<String, Integer> hunMap, List<String> questionList, String askedWord, String answeredWord) {
-        if (hunDictionaryWithEngSynonyms.get(askedWord).
-
-                contains(answeredWord)) { //ezzel nézem meg, hogy a kérdezett szóhoz tartozik-e olyan value, mint a válasz szó a könyvtármapban.
-            System.out.println(GREEN.typeOfColor + "jár a jutifalat!" + RESET.typeOfColor);
+    private void answerChecker
+            (MultiValuedMap<String, String> hunDictionaryWithEngSynonyms, Map<String, Integer> hunMap, List<String> questionList, String
+                    askedWord, String answeredWord) {
+        if (hunDictionaryWithEngSynonyms.get(askedWord).contains(answeredWord)) { //ezzel nézem meg, hogy a kérdezett szóhoz tartozik-e olyan value, mint a válasz szó a könyvtármapban.
+            System.out.print(GREEN.typeOfColor + "jár a jutifalat!" + RESET.typeOfColor);
             goodAnswer++;
             hunMap.put(questionList.get(0), hunMap.get(askedWord) + 1); //ezzel módosítom a mapban a kérdezett szó-hoz (key) tartozó value-t.
+            System.out.println("The value of word increased to: " + hunMap.put(questionList.get(0), hunMap.get(askedWord)));
         } else {
-            System.out.println(RED.typeOfColor + "hülye vagy fiam mint szódás a lovát!" + RESET.typeOfColor);
             hunMap.put(questionList.get(0), hunMap.get(askedWord) - 2);
+            System.out.println(RED.typeOfColor + "hülye vagy fiam mint szódás a lovát! " + RESET.typeOfColor + "The value of word decreased to: " + hunMap.put(questionList.get(0), hunMap.get(askedWord)));
             System.out.println("The possible answer is: " + GREEN.typeOfColor +
                     hunDictionaryWithEngSynonyms.get(askedWord) + RESET.typeOfColor);
         }
