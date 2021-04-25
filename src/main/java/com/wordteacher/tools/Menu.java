@@ -217,6 +217,7 @@ public class Menu {
 
     public static void exit() {
         System.out.println("Good bye!");
+        wt.quitDriver();
     }
 
 }

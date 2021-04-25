@@ -1,5 +1,7 @@
 package com.wordteacher.tools;
 
+import com.wordteacher.pageobjects.GoogleTranslate;
+import com.wordteacher.webdriver.DriverProvider;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -32,7 +34,7 @@ import static com.wordteacher.utils.Colors.GREEN;
 import static com.wordteacher.utils.Colors.RED;
 import static com.wordteacher.utils.Colors.RESET;
 
-public class WordTeacher {
+public class WordTeacher extends DriverProvider {
 
     private int repeatNum;
     private int goodAnswer = 0;
@@ -198,7 +200,7 @@ public class WordTeacher {
 
     public void translateEngHun(String engWord) {
         System.out.print("The meaning of the English word " + BLUE.typeOfColor + engWord + RESET.typeOfColor + " : ");
-
+        spellWord(engWord);
         try {
             List<List<String>> dictionaryInList = new ArrayList<>();
             try (BufferedReader br = new BufferedReader(new FileReader(PATH_DICTIONARY_ENGHUN))) {
@@ -221,6 +223,13 @@ public class WordTeacher {
         } catch (IOException e) {
             System.out.println("translateEngHun() exception: " + e);
         }
+    }
+
+    private void spellWord(String word) {
+        setupBrowser();
+        GoogleTranslate googleTranslate = new GoogleTranslate(driver);
+        googleTranslate.enterText(word);
+        googleTranslate.clickListen();
     }
 
     private void pressEnterToContinue() {
@@ -259,6 +268,7 @@ public class WordTeacher {
                 Matcher matcher = pattern.matcher(dictionaryInList.get(i).get(1));
                 if (matcher.find()) {
                     System.out.print(GREEN.typeOfColor + dictionaryInList.get(i).get(0) + RESET.typeOfColor + ", ");
+                    spellWord(dictionaryInList.get(i).get(0));
                 }
             }
             System.out.println();
