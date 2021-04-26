@@ -27,9 +27,19 @@ public abstract class Page {
         wait.until(ExpectedConditions.attributeToBe(element, attribute, value));
     }
 
-    public void typeText(WebElement element, String text) {
+    public WebElement typeText(WebElement element, String text) {
         WebElement field = waitUntilElementVisible(element);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.elementToBeClickable(field));
         field.sendKeys(Keys.CONTROL, "a", Keys.BACK_SPACE);
         field.sendKeys(text);
+        return field;
+    }
+
+    public WebElement click(WebElement element) {
+        WebElement elementToClick = waitUntilElementVisible(element);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.elementToBeClickable(elementToClick)).click();
+        return  elementToClick;
     }
 }

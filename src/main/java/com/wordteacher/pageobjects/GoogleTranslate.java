@@ -24,7 +24,7 @@ public class GoogleTranslate extends Page {
     }
 
     public void clickListen() {
-        waitUntilElementVisible(listenButton).click();
+        click(listenButton);
         waitForElementAttributeToBe(listenButton, "aria-pressed", "true");
         waitForElementAttributeToBe(listenButton, "aria-pressed", "false");
     }
