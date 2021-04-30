@@ -12,8 +12,8 @@ public class GoogleTranslate extends Page {
     @FindBy(xpath = "(//span[normalize-space()='volume_up']/ancestor::button)[1]")
     private WebElement listenButton;
 
-    @FindBy(xpath = "(//span[normalize-space()='volume_up']/ancestor::button[@aria-pressed='true'])[1]")
-    private WebElement listenButtonPressed;
+//    @FindBy(xpath = "(//span[normalize-space()='volume_up']/ancestor::button[@aria-pressed='true'])[1]")
+//    private WebElement listenButtonPressed;
 
     public GoogleTranslate(WebDriver driver) {
         super(driver);

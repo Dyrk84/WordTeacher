@@ -13,7 +13,7 @@ public abstract class Page {
 
     Page(WebDriver driver) {
         this.driver = driver;
-        PageFactory.initElements(driver, this);
+        PageFactory.initElements(driver, this); //a lokátorokat (@findby) kezeli a PageFactory
     }
 
     public WebElement waitUntilElementVisible(WebElement element) {

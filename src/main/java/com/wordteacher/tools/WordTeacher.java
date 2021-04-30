@@ -41,7 +41,8 @@ public class WordTeacher extends DriverProvider {
     private int newWordsRecordCounter = 0;
     private int chanceNumber = 0;
     private int noMoreWords = 0;
-
+    private boolean answerSpeller = false;
+    public boolean upreading = false;
     private boolean booleanExistingWord = false;
 
     final private String PATH_DICTIONARY_ENGHUN = "src/main/resources/dictionaryenghun.csv";
@@ -304,9 +305,15 @@ public class WordTeacher extends DriverProvider {
             }
 
             for (int i = 1; i < orderedEngWordsList.size() + 1; i++) { //nyomtatja a multiMap value elemeit az abc sorrendbe tett set hívása szerint.
-                System.out.println(BLUE.typeOfColor + orderedEngWordsList.get(i - 1) + RESET.typeOfColor
-                        + GREEN.typeOfColor + engDictionaryWithHunSynonyms.get(orderedEngWordsList.get(i - 1)) + RESET.typeOfColor);
-                if (i % 20 == 0) { //ezzel érem el azt, hogy ne hányja tele a képernyőt szavakkal, ha már nagy a szótár
+                System.out.print(BLUE.typeOfColor + orderedEngWordsList.get(i - 1) + RESET.typeOfColor);
+                if (upreading) {
+                    spellWord(orderedEngWordsList.get(i - 1));
+                }
+                System.out.println(GREEN.typeOfColor + engDictionaryWithHunSynonyms.get(orderedEngWordsList.get(i - 1)) + RESET.typeOfColor);
+                if (upreading) {
+                    spellWord(engDictionaryWithHunSynonyms.get(orderedEngWordsList.get(i - 1)).toString());
+                }
+                if (!upreading && i % 20 == 0) { //ezzel érem el azt, hogy ne hányja tele a képernyőt szavakkal, ha már nagy a szótár
                     System.out.println("The dictionary overviewed content : " + setEngWords.size() + "/" + (i));
                     pressEnterToContinue();
                 }
@@ -349,9 +356,15 @@ public class WordTeacher extends DriverProvider {
             }
 
             for (int i = 1; i < orderedHunWordsList.size() + 1; i++) {
-                System.out.println(BLUE.typeOfColor + orderedHunWordsList.get(i - 1) + RESET.typeOfColor
-                        + GREEN.typeOfColor + hunDictionaryWithEngSynonyms.get(orderedHunWordsList.get(i - 1)) + RESET.typeOfColor);
-                if (i % 20 == 0) {
+                System.out.print(BLUE.typeOfColor + orderedHunWordsList.get(i - 1) + RESET.typeOfColor);
+                if (upreading) {
+                    spellWord(orderedHunWordsList.get(i - 1));
+                }
+                System.out.println(GREEN.typeOfColor + hunDictionaryWithEngSynonyms.get(orderedHunWordsList.get(i - 1)) + RESET.typeOfColor);
+                if (upreading) {
+                    spellWord(hunDictionaryWithEngSynonyms.get(orderedHunWordsList.get(i - 1)).toString());
+                }
+                if (!upreading && i % 20 == 0) {
                     System.out.println("The dictionary overviewed content : " + hunWordsList.size() + "/" + (i));
                     pressEnterToContinue();
                 }
@@ -604,7 +617,6 @@ public class WordTeacher extends DriverProvider {
             for (int i = 0; i < engMap.size(); i++) { //megnézi, hogy melyik values kisebb mint a dobott érték, és bemásolja a szót a kérdezéshez létrehozott listába
                 if (engMap.get(engWordsListNoDuplicates.get(i)) < randomNum) {
                     questionList.add(engWordsListNoDuplicates.get(i));
-
                 }
             }
         }
@@ -613,11 +625,13 @@ public class WordTeacher extends DriverProvider {
         if (questionList.size() == 0) {
             ifNoMoreQuestion(chanceNumber);
         } else {
+            spellWord(questionList.get(0));
             String askedWord = questionList.get(0);
             System.out.println("What does the hungarian word mean: " + BLUE.typeOfColor + askedWord + RESET.typeOfColor);
             System.out.print("Write the correct answer here: ");
             String answeredWord = scanner();
 
+            answerSpeller = false;
             answerChecker(engDictionaryWithHunSynonyms, engMap, questionList, askedWord, answeredWord);
 
             valueFilesRewriter(engMap, PATH_ENGVALUES);
@@ -684,11 +698,13 @@ public class WordTeacher extends DriverProvider {
         if (questionList.size() == 0) {
             ifNoMoreQuestion(chanceNumber);
         } else {
+            spellWord(questionList.get(0));
             String askedWord = questionList.get(0);
             System.out.println("What does the hungarian word mean: " + BLUE.typeOfColor + askedWord + RESET.typeOfColor);
             System.out.print("Write the correct answer here: ");
             String answeredWord = scanner();
 
+            answerSpeller = true;
             answerChecker(hunDictionaryWithEngSynonyms, hunMap, questionList, askedWord, answeredWord);
 
             valueFilesRewriter(hunMap, PATH_HUNVALUES);
@@ -711,6 +727,9 @@ public class WordTeacher extends DriverProvider {
             (MultiValuedMap<String, String> hunDictionaryWithEngSynonyms, Map<String, Integer> hunMap, List<String> questionList, String
                     askedWord, String answeredWord) {
         if (hunDictionaryWithEngSynonyms.get(askedWord).contains(answeredWord)) { //ezzel nézem meg, hogy a kérdezett szóhoz tartozik-e olyan value, mint a válasz szó a könyvtármapban.
+            if (answerSpeller) {
+                spellWord(answeredWord);
+            }
             System.out.print(GREEN.typeOfColor + "jár a jutifalat!" + RESET.typeOfColor);
             goodAnswer++;
             hunMap.put(questionList.get(0), hunMap.get(askedWord) + 1); //ezzel módosítom a mapban a kérdezett szó-hoz (key) tartozó value-t.

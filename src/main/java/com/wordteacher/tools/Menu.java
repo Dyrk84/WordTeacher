@@ -117,6 +117,16 @@ public class Menu {
                 wt.dictionaryOverviewHunEng();
                 break;
             case 3:
+                wt.upreading = true;
+                wt.dictionaryOverviewEngHun();
+                wt.upreading = false;
+                break;
+            case 4:
+                wt.upreading = true;
+                wt.dictionaryOverviewHunEng();
+                wt.upreading = false;
+                break;
+            case 5:
                 menu();
                 break;
             default:
@@ -197,7 +207,9 @@ public class Menu {
                 " *");
         System.out.println("* " + RED.typeOfColor + "1." + RESET.typeOfColor + " Dictionary overview Eng-Hun                         *");
         System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Dictionary overview Hun-Eng                         *");
-        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Back to the main menu                               *");
+        System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Dictionary upreading Eng-Hun                        *");
+        System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Dictionary upreading Hun-Eng                        *");
+        System.out.println("* " + RED.typeOfColor + "5." + RESET.typeOfColor + " Back to the main menu                               *");
         System.out.println("**********************************************************");
     }
 

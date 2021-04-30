@@ -6,7 +6,7 @@ import org.openqa.selenium.support.FindBy;
 
 public class GoogleConsent extends Page {
 
-    @FindBy(css = "[method='POST'] button")
+    @FindBy(xpath = "//span[normalize-space()='Elfogadom']/ancestor::button")
     private WebElement acceptButton;
 
     public GoogleConsent(WebDriver driver) {
@@ -14,6 +14,6 @@ public class GoogleConsent extends Page {
     }
 
     public void clickAcceptConsent() {
-        click(acceptButton);
+        waitUntilElementVisible(acceptButton).click();
     }
 }
