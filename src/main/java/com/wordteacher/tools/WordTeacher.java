@@ -2,6 +2,7 @@ package com.wordteacher.tools;
 
 import com.wordteacher.pageobjects.GoogleTranslate;
 import com.wordteacher.webdriver.DriverProvider;
+import lombok.Getter;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -45,8 +46,11 @@ public class WordTeacher extends DriverProvider {
     public boolean upreading = false;
     private boolean booleanExistingWord = false;
 
+    @Getter
     final private String PATH_DICTIONARY_ENGHUN = "src/main/resources/dictionaryenghun.csv";
+    @Getter
     final private String PATH_ENGVALUES = "src/main/resources/engValues.csv";
+    @Getter
     final private String PATH_HUNVALUES = "src/main/resources/hunValues.csv";
 
     public void enteringAWordToLearn() {
@@ -572,6 +576,48 @@ public class WordTeacher extends DriverProvider {
         goodAnswer = 0;
         chanceNumber = 100;
         noMoreWords = 0;
+        Menu.menu();
+    }
+
+    public void unlearnedWordsUpreader(String dictionaryPath, String valuesFilePath){
+        int x = 0; int y = 1;
+        if (valuesFilePath.equals(getPATH_ENGVALUES())){
+             x = 0;  y = 1;
+        }
+        if (valuesFilePath.equals(getPATH_HUNVALUES())){
+             x = 1;  y = 0;
+        }
+
+        List<List<String>> dictionaryInList = new ArrayList<>();
+        readFromFileToListList(dictionaryInList, dictionaryPath);
+        MultiValuedMap<String, String> multiValuedMapWordsWithSynonyms = new ArrayListValuedHashMap<>();
+        for (int i = 0; i < dictionaryInList.size(); i++) { //feltölti a multiMapet a fileból kiolvasott lista elemeivel
+            multiValuedMapWordsWithSynonyms.put(dictionaryInList.get(i).get(x), dictionaryInList.get(i).get(y));
+        }
+
+        List<List<String>> wordsWithValuesList = new ArrayList<>();
+        readFromFileToListList(wordsWithValuesList, valuesFilePath);
+
+        List<String> words = new ArrayList<>(); //csinál egy String listát a tömbös lista első oszlopából
+        for (int i = 0; i < wordsWithValuesList.size(); i++) {
+            words.add(wordsWithValuesList.get(i).get(0));
+        }
+
+        List<String> valuesInStrings = new ArrayList<>(); //csinál egy String listát a tömbös lista második oszlopából
+        for (int i = 0; i < wordsWithValuesList.size(); i++) {
+            valuesInStrings.add(wordsWithValuesList.get(i).get(1));
+        }
+        List<Integer> values = valuesInStrings.stream().map(Integer::valueOf).collect(Collectors.toList()); //Integer listává alakítja a String listát
+
+
+        for (int i = 0; i < valuesInStrings.size(); i++){
+            if (values.get(i) < 26){
+                System.out.print(words.get(i) + " / " );
+                spellWord(words.get(i));
+                System.out.println(multiValuedMapWordsWithSynonyms.get(words.get(i)));
+                spellWord(multiValuedMapWordsWithSynonyms.get(words.get(i)).toString());
+            }
+        }
         Menu.menu();
     }
 

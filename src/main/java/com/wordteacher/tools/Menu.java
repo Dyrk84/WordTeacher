@@ -127,6 +127,12 @@ public class Menu {
                 wt.upreading = false;
                 break;
             case 5:
+                wt.unlearnedWordsUpreader(wt.getPATH_DICTIONARY_ENGHUN(),wt.getPATH_ENGVALUES());
+                break;
+            case 6:
+                wt.unlearnedWordsUpreader(wt.getPATH_DICTIONARY_ENGHUN(),wt.getPATH_HUNVALUES());
+                break;
+            case 7:
                 menu();
                 break;
             default:
@@ -209,7 +215,9 @@ public class Menu {
         System.out.println("* " + RED.typeOfColor + "2." + RESET.typeOfColor + " Dictionary overview Hun-Eng                         *");
         System.out.println("* " + RED.typeOfColor + "3." + RESET.typeOfColor + " Dictionary upreading Eng-Hun                        *");
         System.out.println("* " + RED.typeOfColor + "4." + RESET.typeOfColor + " Dictionary upreading Hun-Eng                        *");
-        System.out.println("* " + RED.typeOfColor + "5." + RESET.typeOfColor + " Back to the main menu                               *");
+        System.out.println("* " + RED.typeOfColor + "5." + RESET.typeOfColor + " Dictionary upreading unlearned words Eng-Hun        *");
+        System.out.println("* " + RED.typeOfColor + "6." + RESET.typeOfColor + " Dictionary upreading unlearned words Hun-Eng        *");
+        System.out.println("* " + RED.typeOfColor + "7." + RESET.typeOfColor + " Back to the main menu                               *");
         System.out.println("**********************************************************");
     }
 
